@@ -1,0 +1,73 @@
+const fs = require("fs");
+const readline = require("readline");
+const chalk = require("chalk");
+
+const archivoTareas = "tareas.json";
+
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
+
+const cargarTareas = () => {
+    try {
+        return JSON.parse(fs.readFileSync(archivoTareas, "utf-8"));
+    } catch (error) {
+        return [];
+    }
+};
+
+const guardarTareas = (tareas) => {
+    fs.writeFileSync(archivoTareas, JSON.stringify(tareas, null, 2));
+};
+
+const mostrarMenu = () => {
+    console.log(chalk.blue("\nGestor de Tareas"));
+    console.log("1. Ver tareas");
+    console.log("2. Agregar tarea");
+    console.log("3. Marcar tarea como completada");
+    console.log("4. Salir\n");
+    rl.question("Seleccione una opción: ", manejarOpcion);
+};
+
+const manejarOpcion = (opcion) => {
+    let tareas = cargarTareas();
+
+    switch (opcion) {
+        case "1":
+            console.log(chalk.green("\nLista de Tareas:"));
+            tareas.forEach((t, i) => console.log(`${i + 1}. ${t.completada ? "✔" : "✖"} ${t.nombre}`));
+            mostrarMenu();
+            break;
+        case "2":
+            rl.question("Ingrese la nueva tarea: ", (nombre) => {
+                tareas.push({ nombre, completada: false });
+                guardarTareas(tareas);
+                console.log(chalk.green("Tarea agregada."));
+                mostrarMenu();
+            });
+            break;
+        case "3":
+            rl.question("Número de tarea a completar: ", (num) => {
+                const index = parseInt(num) - 1;
+                if (tareas[index]) {
+                    tareas[index].completada = true;
+                    guardarTareas(tareas);
+                    console.log(chalk.green("Tarea marcada como completada."));
+                } else {
+                    console.log(chalk.red("Número inválido."));
+                }
+                mostrarMenu();
+            });
+            break;
+        case "4":
+            console.log(chalk.yellow("Saliendo del gestor de tareas..."));
+            rl.close();
+            break;
+        default:
+            console.log(chalk.red("Opción no válida."));
+            mostrarMenu();
+    }
+};
+
+mostrarMenu();
