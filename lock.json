@@ -36,7 +36,7 @@ const manejarOpcion = (opcion) => {
     switch (opcion) {
         case "1":
             console.log(chalk.green("\nLista de Tareas:"));
-            tareas.forEach((t, i) => console.log(`${i + 1}. ${t.completada ? "✔" : "✖"} ${t.nombre}`));
+            tareas.forEach((t, i) => console.log(${i + 1}. ${t.completada ? "✔" : "✖"} ${t.nombre}));
             mostrarMenu();
             break;
         case "2":
